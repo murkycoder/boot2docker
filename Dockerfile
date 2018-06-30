@@ -28,7 +28,7 @@ RUN set -eux; \
 ENV KERNEL_VERSION  4.9.93
 
 # Fetch the kernel sources
-RUN curl --retry 10 https://cdn.kernel.org/pub/linux/kernel/v${KERNEL_VERSION%%.*}.x/linux-$KERNEL_VERSION.tar.xz | tar -C / -xJ && \
+RUN curl --retry 10 -L https://cdn.kernel.org/pub/linux/kernel/v${KERNEL_VERSION%%.*}.x/linux-$KERNEL_VERSION.tar.xz | tar -C / -xJ && \
     mv /linux-$KERNEL_VERSION /linux-kernel
 
 # http://aufs.sourceforge.net/
@@ -378,6 +378,9 @@ RUN set -ex \
 	&& DATE="$(date)" \
 	&& echo "${GIT_BRANCH} : ${GITSHA1} - ${DATE}" \
 		| tee "$ROOTFS/etc/boot2docker"
+ENV COMPOSE_VERSION 1.20.1
+RUN curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` -o "$ROOTFS/usr/local/bin"/docker-compose && \
+    chmod +x "$ROOTFS/usr/local/bin"/docker-compose
 
 # Copy boot params
 COPY rootfs/isolinux /tmp/iso/boot/isolinux
